@@ -46,12 +46,10 @@
                    $OutputObj | Add-Member -MemberType NoteProperty -Name InstalledDate -Value $AppInstalledDate            
                    $OutputObj | Add-Member -MemberType NoteProperty -Name UninstallKey -Value $AppUninstall          
                    $OutputObj | Add-Member -MemberType NoteProperty -Name SoftwareArchitecture -Value $Softwarearchitecture            
-                   $installedSoftware += $OutputObj
-                   #$pcApps += $OutputObj                          
+                   $installedSoftware += $OutputObj                     
                }            
             }             
-        }
-        #$installedSoftwarePerPC += $pcApps            
+        }          
     }
     
     return $installedSoftware 
@@ -59,13 +57,7 @@
 $dir = (pwd).Path
 $timestamp = Get-Date -Format o | foreach {$_ -replace ":", "."}
 
-#Get-InstalledSoftware -verbose | Sort-Object -Property AppName -Unique | Format-Table -AutoSize
-
-$soft = Get-InstalledSoftware -verbose
-
-#$soft | Sort-Object -Property AppName -Unique | select AppName, @{label='count';Expression={($soft.AppName -eq $_.AppName).Count}}, @{label='ComputerName';expression={($soft.AppName -eq $_.AppName | select $_.ComputerName) | Out-String}}, @{label='AppVersion';expression={($soft.AppName -eq $_.AppName | select $_.AppVersion)}} | Export-Csv "$dir\installedSoftware_$timestamp.csv" -Delimiter ',' -NoTypeInformation
-
-#Get-InstalledSoftware | select AppName | sort AppName | Get-Unique -OnType | sort AppName | measure AppName | select AppName, AppVendor, InstalledDate, ComputerName | Export-Csv "$dir\installedSoftware_$timestamp.csv" -Delimiter ',' -NoTypeInformation
+$soft = Get-InstalledSoftware #-verbose
 
 $FinaleArray = @()
 $installedSoftwarePerPC | foreach {
