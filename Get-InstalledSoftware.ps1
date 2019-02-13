@@ -10,17 +10,17 @@
     $i = 1
 
     foreach($Computer in $ComputerName) {
-        Write-Progress -Activity "Connecting to Ad Computers" -Status 'Connecting' -PercentComplete ($i/$ComputerName.Count*100) -CurrentOperation $Computer;
+        Write-Progress -Activity "Connecting to AD Computers" -Status 'Connecting' -PercentComplete ($i/$ComputerName.Count*100) -CurrentOperation $Computer;
         $i++
         $pcApps = @()            
-        Write-Verbose "Trying to connect to pc: $Computer"            
+        LogWrite "Trying to connect to pc: $Computer"            
         if(Test-Connection -ComputerName $Computer -Count 1 -ErrorAction SilentlyContinue) { # -ea 0
-            Write-Verbose "Working on pc $Computer"           
+            LogWrite "Working on pc $Computer"           
             foreach($UninstallRegKey in $UninstallRegKeys) {            
                 try {
                     $Applications = Get-ItemProperty -Path $UninstallRegKey           
                 } catch {            
-                    Write-Verbose "Failed to read $UninstallRegKey"            
+                    LogWrite "Failed to read $UninstallRegKey"            
                     Continue            
                 }           
             $j = 1
@@ -54,10 +54,22 @@
     
     return $installedSoftware 
 }
+
+Function LogWrite
+{
+   Param ([string]$logstring)
+
+   Add-content $Logfile -value $logstring
+}
+
 $dir = (pwd).Path
 $timestamp = Get-Date -Format o | foreach {$_ -replace ":", "."}
 
-$soft = Get-InstalledSoftware #-verbose
+$Logfile = "$dir\installedSoftware_$timestamp.log"
+
+$soft = Get-InstalledSoftware
+
+LogWrite "Managing the data and exporting it to make a csv file"
 
 $FinaleArray = @()
 $installedSoftwarePerPC | foreach {
@@ -81,4 +93,6 @@ $installedSoftwarePerPC | foreach {
         $FinaleArray += $OutputObj    
     }
 }
+LogWrite "Writing the CSV file to $dir\installedSoftware_$timestamp.csv"
 $FinaleArray | Export-Csv "$dir\installedSoftware_$timestamp.csv" -Delimiter ',' -NoTypeInformation #| Format-Table -AutoSize 
+LogWrite "$Error[0]"
