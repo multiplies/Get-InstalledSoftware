@@ -62,9 +62,6 @@ Function LogWrite
    Add-content $Logfile -value $logstring
 }
 
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
-
-
 $dir = (pwd).Path
 $timestamp = Get-Date -Format o | foreach {$_ -replace ":", "."}
 
@@ -82,7 +79,7 @@ $soft | foreach {
         $temp = $FinaleArray | where { $AppName -eq $_.AppName -and $AppVersion -eq $_.AppVersion }
         $index = $FinaleArray.indexof($temp)
         $FinaleArray[$index].Count = $FinaleArray[$index].Count+1
-        $FinaleArray[$index].ComputerName = $FinaleArray[$index].ComputerName + "`n" + $_.ComputerName
+        $FinaleArray[$index].ComputerName = $FinaleArray[$index].ComputerName + " " + $_.ComputerName
     }else{
         $OutputObj = New-Object -TypeName PSobject
         $OutputObj | Add-Member -MemberType NoteProperty -Name AppName -Value $_.AppName
@@ -97,5 +94,5 @@ $soft | foreach {
     }
 }
 LogWrite "Writing the CSV file to $dir\installedSoftware_$timestamp.csv"
-$FinaleArray | Export-Csv "$dir\installedSoftware_$timestamp.csv" -Delimiter ',' -NoTypeInformation #| Format-Table -AutoSize 
+$FinaleArray | Export-Clixml "$dir\installedSoftware_$timestamp.xml" -NoClobber #-Delimiter ',' -NoTypeInformation #| Format-Table -AutoSize 
 LogWrite "$Error[0]"
