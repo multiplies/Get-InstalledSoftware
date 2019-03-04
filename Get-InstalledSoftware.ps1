@@ -95,4 +95,5 @@ $soft | foreach {
 }
 LogWrite "Writing the CSV file to $dir\installedSoftware_$timestamp.csv"
 $FinaleArray | Export-Clixml "$dir\installedSoftware_$timestamp.xml" -NoClobber #-Delimiter ',' -NoTypeInformation #| Format-Table -AutoSize 
+$FinaleArray | Out-GridView
 LogWrite "$Error[0]"
