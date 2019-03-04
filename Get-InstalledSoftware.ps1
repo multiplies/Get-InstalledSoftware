@@ -72,7 +72,7 @@ $soft = Get-InstalledSoftware
 LogWrite "Managing the data and exporting it to make a csv file"
 
 $FinaleArray = @()
-$installedSoftwarePerPC | foreach {
+$soft | foreach {
     $AppName = $_.AppName
     $AppVersion = $_.AppVersion
     if($FinaleArray.AppName -eq $_.AppName -and $FinaleArray.AppVersion -eq $_.AppVersion){
